@@ -637,8 +637,10 @@ DEBIAN_FRONTEND=noninteractive ${APT} -y install dovecot-common dovecot-core dov
 			;;
 		roundcube)
 			mkdir -p /var/www/mail/rc
-			tar xf roundcube/inst/${roundcube_version}.tar -C roundcube/inst/
-			cp -R roundcube/inst/${roundcube_version}/* /var/www/mail/rc/
+			wget -O roundcube/inst/${roundcube_version}.tar.gz https://github.com/roundcube/roundcubemail/releases/download/${roundcube_version}/roundcubemail-${roundcube_version}-complete.tar.gz
+			tar xzf roundcube/inst/${roundcube_version}.tar.gz -C roundcube/inst/
+			cp -R roundcube/inst/roundcubemail-${roundcube_version}/* /var/www/mail/rc/
+			
 			if [[ ${is_upgradetask} != "yes" ]]; then
 				cp -R roundcube/conf/* /var/www/mail/rc/
 				sed -i "s/my_dbhost/${my_dbhost}/g" /var/www/mail/rc/config/config.inc.php
@@ -649,11 +651,11 @@ DEBIAN_FRONTEND=noninteractive ${APT} -y install dovecot-common dovecot-core dov
 				sed -i "s/MAILCOW_HOST.MAILCOW_DOMAIN/${sys_hostname}.${sys_domain}/g" /var/www/mail/rc/config/config.inc.php
 				mysql --host ${my_dbhost} -u ${my_rcuser} -p${my_rcpass} ${my_rcdb} < /var/www/mail/rc/SQL/mysql.initial.sql
 			else
-				chmod +x roundcube/inst/${roundcube_version}/bin/installto.sh
-				roundcube/inst/${roundcube_version}/bin/installto.sh /var/www/mail/rc
+				chmod +x roundcube/inst/roundcubemail-${roundcube_version}/bin/installto.sh
+				roundcube/inst/roundcubemail-${roundcube_version}/bin/installto.sh /var/www/mail/rc
 			fi
 			chown -R www-data: /var/www/mail/rc
-			rm -rf roundcube/inst/${roundcube_version}
+			rm -rf roundcube/inst/roundcubemail-${roundcube_version}
 			rm -rf /var/www/mail/rc/installer/
 			;;
 		sogo)
